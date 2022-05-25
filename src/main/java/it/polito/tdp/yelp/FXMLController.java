@@ -5,9 +5,11 @@
 package it.polito.tdp.yelp;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.yelp.model.Model;
+import it.polito.tdp.yelp.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,13 +40,13 @@ public class FXMLController {
     private TextField txtX2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbAnno"
-    private ComboBox<?> cmbAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbUtente"
-    private ComboBox<?> cmbUtente; // Value injected by FXMLLoader
+    private ComboBox<User> cmbUtente; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtX1"
     private TextField txtX1; // Value injected by FXMLLoader
@@ -54,12 +56,31 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	String minReviewS = txtN.getText();
+    	try {
+    		int minReview = Integer.parseInt(minReviewS);
+    		Integer anno = cmbAnno.getValue();
+    		if(anno==null) {
+    			txtResult.setText("Devi selezioare un anno valido\n");
+    			return;
+    		}
+    		
+    		String msg = model.creaGrafo(minReview, anno);
+    		txtResult.setText(msg);
+    		cmbUtente.getItems().clear();
+    		cmbUtente.getItems().addAll(model.getUsers());
+    		
+    	} catch(NumberFormatException e) {
+    		txtResult.setText("Devi inserire un numero 'n' valido\n");
+    		return ;
+    	}
     }
 
     @FXML
     void doUtenteSimile(ActionEvent event) {
-
+    	User u = cmbUtente.getValue();
+    	List<User> vicini = model.utentiPiuSimili(u);
+    	txtResult.setText(vicini.toString());
     }
     
     @FXML
@@ -80,6 +101,9 @@ public class FXMLController {
         assert txtX1 != null : "fx:id=\"txtX1\" was not injected: check your FXML file 'Scene.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Scene.fxml'.";
 
+        for (int anno = 2005; anno<=2013; anno++) {
+        	cmbAnno.getItems().add(anno);
+        }
     }
     
     public void setModel(Model model) {
