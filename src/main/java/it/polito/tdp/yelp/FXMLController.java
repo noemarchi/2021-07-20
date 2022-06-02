@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.yelp.model.Giornalista;
 import it.polito.tdp.yelp.model.Model;
 import it.polito.tdp.yelp.model.User;
 import javafx.event.ActionEvent;
@@ -57,7 +58,7 @@ public class FXMLController {
     	catch(NumberFormatException e)
     	{
     		e.printStackTrace();
-    		this.txtResult.setText("Errore! Inserisci un numero minimo di recensioni (numero intero)!");
+    		this.txtResult.setText("ERRORE! Inserisci un numero minimo di recensioni (numero intero)!");
     		return;
     	}
     	
@@ -65,7 +66,7 @@ public class FXMLController {
     	
     	if(anno == null)
     	{
-    		this.txtResult.setText("Errore! Seleziona un anno!");
+    		this.txtResult.setText("ERRORE! Seleziona un anno!");
     		return;
     	}
     	
@@ -84,13 +85,13 @@ public class FXMLController {
     	
     	if(user == null)
     	{
-    		this.txtResult.setText("Errore! Seleziona un utente!");
+    		this.txtResult.setText("ERRORE! Seleziona un utente!");
     		return;
     	}
     	
     	List<User> simili = model.getSimili(user);
     	
-    	this.txtResult.setText("Utenti simili a " + user.toString() + ":\n");
+    	this.txtResult.setText("Utenti simili a " + user.toString() + ":\n\n");
     	
     	for(User u: simili)
     	{
@@ -101,7 +102,49 @@ public class FXMLController {
     @FXML
     void doSimula(ActionEvent event) 
     {
-
+    	Integer numVertici = model.nVertici();
+    	Integer x1 = null;
+    	Integer x2 = null;
+    	
+    	try
+    	{
+    		x1 = Integer.parseInt(this.txtX1.getText());
+    		x2 = Integer.parseInt(this.txtX2.getText());
+    	}
+    	catch (NumberFormatException e)
+    	{
+    		e.printStackTrace();
+    		this.txtResult.setText("ERRORE! Inserisci x1 e x2 in formato numerico!");
+    		return;
+    	}
+    	
+    	if(x2 > numVertici)
+    	{
+    		this.txtResult.setText("ERRORE! x2 deve essere minore del numero di User del grafo = " +numVertici);
+    		return;
+    	}
+    	
+    	if(x1 > x2)
+    	{
+    		this.txtResult.setText("ERRORE! x1 deve essere minore di x2!");
+    		return;
+    	}
+    	
+    	model.simula(x1, x2);
+    	
+    	List<Giornalista> giornalisti = model.getGiornalisti();
+    	Integer numGiorni = model.getNumeroGiorniSimulazione();
+    	
+    	this.txtResult.setText("Simulazione effettuata con successo!\n\n");
+    	this.txtResult.appendText(String.format("%d intervistatori <--> %d utenti <--> %d giorni\n\n",
+    			x1, x2, numGiorni));
+    	
+    	this.txtResult.appendText("Elenco intervistatore <-> numero intervistati:\n");
+    	
+    	for(Giornalista g: giornalisti)
+    	{
+    		this.txtResult.appendText(g.toString());
+    	}
     }
     
 

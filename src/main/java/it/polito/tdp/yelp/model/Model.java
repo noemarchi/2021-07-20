@@ -15,6 +15,7 @@ public class Model
 	private YelpDao dao;
 	private Graph<User, DefaultWeightedEdge> grafo;
 	private List<User> vertici;
+	private Simulatore sim;
 	
 	public Model()
 	{
@@ -51,9 +52,18 @@ public class Model
 				+ grafo.edgeSet().size() + " archi!\n";
 	}
 	
+	
 	public List<User> getVertici()
 	{
 		return this.vertici;
+	}
+	
+	public Integer nVertici()
+	{
+		if(this.grafo == null)
+			return null;
+		
+		return this.grafo.vertexSet().size();
 	}
 	
 	public List<User> getSimili(User user)
@@ -82,4 +92,20 @@ public class Model
 		return simili;
 	}
 	
+	public void simula(int x1, int x2)
+	{
+		sim = new Simulatore(this.grafo);
+		sim.init(x1, x2);
+		sim.run();
+	}
+	
+	public List<Giornalista> getGiornalisti() 
+	{
+		return sim.getGiornalisti();
+	}
+	
+	public int getNumeroGiorniSimulazione() 
+	{
+		return sim.getNumeroGiorni();
+	}
 }
